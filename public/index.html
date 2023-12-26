@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Web Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    #chat-box {
+      height: 300px;
+      overflow-y: scroll;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+
+    #input-box {
+      display: flex;
+      padding: 10px;
+    }
+
+    #message-input {
+      flex: 1;
+      padding: 5px;
+    }
+
+    #send-button {
+      padding: 5px 10px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-box"></div>
+  <div id="input-box">
+    <input type="text" id="message-input" placeholder="Type your message">
+    <button id="send-button">Send</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <script>
+    const chatBox = document.getElementById('chat-box');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    
+    // Connect to the Socket.io server
+    const socket = io();
+
+    sendButton.addEventListener('click', () => {
+      const message = messageInput.value.trim();
+
+      if (message !== '') {
+        // Send the message to the server
+        socket.emit('chat message', message);
+
+        // Clear the input field
+        messageInput.value = '';
+      }
+    });
+
+    // Listen for incoming chat messages
+    socket.on('chat message', (message) => {
+      const messageElement = document.createElement('div');
+      messageElement.textContent = message;
+      chatBox.appendChild(messageElement);
+
+      // Scroll to the bottom of the chat box
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+  </script>
+</body>
+</html>
